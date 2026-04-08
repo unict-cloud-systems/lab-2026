@@ -1,0 +1,53 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Cloud Systems 2026 — EC2 instance with SSH access"
+
+Parameters:
+  InstanceType:
+    Type: String
+    Default: t2.micro
+    Description: EC2 instance type (Free Tier eligible)
+
+  KeyPairName:
+    Type: String
+    Default: vockey
+    Description: Name of an existing EC2 key pair for SSH
+
+  UbuntuAMI:
+    Type: AWS::EC2::Image::Id
+    Description: Ubuntu 24.04 LTS AMI ID (looked up by deploy.sh)
+
+Resources:
+  SSHSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow SSH inbound
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+
+  Manager:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref UbuntuAMI
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyPairName
+      SecurityGroupIds:
+        - !GetAtt SSHSecurityGroup.GroupId
+      Tags:
+        - Key: Name
+          Value: lab-cloud-systems-2026
+
+Outputs:
+  InstancePublicIP:
+    Description: Public IP of the EC2 instance
+    Value: !GetAtt Manager.PublicIp
+
+  SSHCommand:
+    Description: SSH command to connect to the instance
+    Value: !Sub "ssh -i ~/Downloads/labsuser.pem ubuntu@${Manager.PublicIp}"
+
+  AWSCLIDescribe:
+    Description: AWS CLI command to describe running instances
+    Value: "aws ec2 describe-instances --filters Name=tag:Name,Values=lab-cloud-systems-2026 --query 'Reservations[*].Instances[*].{ID:InstanceId,State:State.Name,IP:PublicIpAddress}' --output table"
