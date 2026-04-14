@@ -1,0 +1,6 @@
+#cloud-config
+users:
+  - name: ubuntu
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPaSi2Zuz8RpM0LKYGixR+mhn1QXWk6dX2LAKLtPZmO7 nics@lics
