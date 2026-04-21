@@ -1,0 +1,62 @@
+name: Provision Multipass VMs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'terraform/**'
+      - 'ansible/**'
+  workflow_dispatch:
+
+jobs:
+  # ── Job 1: Provision VMs with OpenTofu ──────────────────────────────────────
+  provision:
+    runs-on: self-hosted   # host runner — needs multipass + tofu installed
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Write SSH key pair
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > terraform/id_ed25519
+          echo "${{ secrets.SSH_PUBLIC_KEY }}"  > terraform/id_ed25519.pub
+          chmod 600 terraform/id_ed25519
+
+      - name: tofu init
+        run: tofu -chdir=terraform init
+
+      - name: tofu plan
+        run: tofu -chdir=terraform plan -out=tfplan
+
+      - name: tofu apply
+        run: tofu -chdir=terraform apply -auto-approve tfplan
+
+      - name: Show outputs
+        run: tofu -chdir=terraform output
+
+  # ── Job 2: Configure nodes with Ansible ─────────────────────────────────────
+  configure:
+    runs-on: self-hosted
+    needs: provision        # runs only after provision succeeds
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Write SSH private key
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > terraform/id_ed25519
+          chmod 600 terraform/id_ed25519
+
+      - name: Wait for VMs to be SSH-ready
+        run: sleep 20
+
+      - name: Install Docker on all nodes
+        run: |
+          ansible-playbook \
+            -i ansible/hosts.ini \
+            ansible/install_docker.yml
+
+      - name: Verify Docker installation
+        run: |
+          ansible -i ansible/hosts.ini all \
+            -m shell -a "docker --version"
