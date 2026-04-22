@@ -50,8 +50,8 @@ resource "local_file" "inventory" {
   filename = "${path.module}/../ansible/hosts.ini"
 
   content = templatefile("${path.module}/inventory.tpl", {
-    manager_ip       = multipass_instance.manager.ipv4[0]
-    worker_ips       = [for w in multipass_instance.worker : w.ipv4[0]]
+    manager_ip       = multipass_instance.manager.ipv4
+    worker_ips       = [for w in multipass_instance.worker : w.ipv4]
     ssh_private_key  = var.ssh_private_key_path
   })
 }

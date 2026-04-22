@@ -1,11 +1,11 @@
 output "manager_ip" {
   description = "IP address of the manager node"
-  value       = multipass_instance.manager.ipv4[0]
+  value       = multipass_instance.manager.ipv4
 }
 
 output "worker_ips" {
   description = "IP addresses of the worker nodes"
-  value       = [for w in multipass_instance.worker : w.ipv4[0]]
+  value       = [for w in multipass_instance.worker : w.ipv4]
 }
 
 output "next_steps" {

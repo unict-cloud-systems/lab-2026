@@ -1,1 +1,26 @@
 slides/out/
+
+# Terraform / OpenTofu
+**/.terraform/
+**/.terraform.lock.hcl
+**/terraform.tfstate
+**/terraform.tfstate.backup
+**/terraform.tfstate.*.backup
+**/*.tfplan
+
+# Generated files
+**/cloud-init.rendered.yml
+**/ansible/hosts.ini
+
+# gitea-setup runtime files (binary, data, config — gitignored in sub-dir too)
+lab/gitea-setup/gitea
+lab/gitea-setup/act_runner
+lab/gitea-setup/conf/
+lab/gitea-setup/data/
+lab/gitea-setup/log/
+lab/gitea-setup/.runner
+lab/gitea-setup/.env
+
+# gitea-multipass-terraform is pushed to Gitea as its own repo
+# ignore the nested .git so the parent repo doesn't complain
+lab/gitea-multipass-terraform/.git/
