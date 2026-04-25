@@ -7,7 +7,7 @@ variable "ubuntu_image" {
 variable "worker_count" {
   description = "Number of worker nodes to create"
   type        = number
-  default     = 3
+  default     = 2
 }
 
 variable "manager_cpus" {

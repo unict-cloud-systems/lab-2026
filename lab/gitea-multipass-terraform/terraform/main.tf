@@ -8,7 +8,7 @@ terraform {
 
 # Use local state file in home directory 
   backend "local" {
-    path = "~/terraform.tfstate"
+    path = pathexpand("~/terraform.tfstate")
   }
 }
 
