@@ -22,6 +22,9 @@ jobs:
           echo "${{ secrets.SSH_PUBLIC_KEY }}"  > terraform/id_ed25519.pub
           chmod 600 terraform/id_ed25519
 
+      - name: Ensure persistent state directory exists
+        run: mkdir -p /opt/tofu-state/gitea-multipass
+
       - name: tofu init
         run: tofu -chdir=terraform init
 
@@ -53,10 +56,10 @@ jobs:
       - name: Install Docker on all nodes
         run: |
           ansible-playbook \
-            -i ansible/hosts.ini \
+            -i ~/hosts.ini \
             ansible/install_docker.yml
 
       - name: Verify Docker installation
         run: |
-          ansible -i ansible/hosts.ini all \
+          ansible -i ~/hosts.ini all \
             -m shell -a "docker --version"

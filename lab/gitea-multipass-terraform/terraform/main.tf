@@ -5,6 +5,11 @@ terraform {
       version = "1.4.3"
     }
   }
+
+# Use local state file in home directory 
+  backend "local" {
+    path = "~/terraform.tfstate"
+  }
 }
 
 provider "multipass" {}
@@ -47,7 +52,7 @@ resource "multipass_instance" "worker" {
 # ── Generate Ansible inventory automatically ──────────────────────────────────
 
 resource "local_file" "inventory" {
-  filename = "${path.module}/../ansible/hosts.ini"
+  filename = pathexpand("~/hosts.ini")
 
   content = templatefile("${path.module}/inventory.tpl", {
     manager_ip      = multipass_instance.manager.ipv4
