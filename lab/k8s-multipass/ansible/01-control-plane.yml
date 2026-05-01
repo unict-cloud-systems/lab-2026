@@ -54,11 +54,12 @@
       changed_when: false
 
     - name: Save join command locally for the worker play
-      local_action:
-        module: copy
+      copy:
         content: "{{ join_command_raw.stdout }}\n"
         dest: /tmp/k8s_join_command.sh
         mode: '0600'
+      delegate_to: localhost
+      become: false
 
     # ── Sanity check ──────────────────────────────────────────────────────────
     - name: Show cluster nodes (control plane should be Ready)

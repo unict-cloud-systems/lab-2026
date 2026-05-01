@@ -60,6 +60,7 @@
           - curl
           - gnupg
           - containerd
+          - conntrack       # required by kubeadm preflight checks
         state: present
 
     - name: Create containerd config directory
