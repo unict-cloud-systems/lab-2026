@@ -1,0 +1,30 @@
+name: Deploy to Kubernetes
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'k8s/**'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: self-hosted   # shell runner — kubeconfig at ~/k8s-config
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify cluster is reachable
+        run: KUBECONFIG=~/k8s-config kubectl get nodes
+
+      - name: Apply manifests
+        run: KUBECONFIG=~/k8s-config kubectl apply -f k8s/
+
+      - name: Wait for rollout
+        run: KUBECONFIG=~/k8s-config kubectl rollout status deployment/nginx --timeout=120s
+
+      - name: Show running pods
+        run: KUBECONFIG=~/k8s-config kubectl get pods -o wide
+
+      - name: Show service
+        run: KUBECONFIG=~/k8s-config kubectl get svc nginx
