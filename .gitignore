@@ -24,3 +24,6 @@ lab/gitea-setup/.env
 # gitea-multipass-terraform is pushed to Gitea as its own repo
 # ignore the nested .git so the parent repo doesn't complain
 lab/gitea-multipass-terraform/.git/
+CLAUDE.md
+.gitignore
+PLAN.md

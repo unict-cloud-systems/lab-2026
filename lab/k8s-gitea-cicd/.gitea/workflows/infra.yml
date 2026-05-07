@@ -23,7 +23,7 @@ jobs:
           chmod 600 terraform/id_ed25519
 
       - name: tofu init
-        run: tofu -chdir=terraform init
+        run: tofu -chdir=terraform init -reconfigure -backend-config="path=${HOME}/k8s-terraform.tfstate"
 
       - name: tofu plan
         run: tofu -chdir=terraform plan -out=tfplan

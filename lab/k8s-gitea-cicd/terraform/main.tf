@@ -17,7 +17,7 @@ provider "multipass" {}
 # ── Render cloud-init with the local SSH public key ───────────────────────────
 
 resource "local_file" "cloud_init" {
-  filename = "${path.module}/cloud-init.rendered.yml"
+  filename = pathexpand("~/cloud-init.rendered.yml")
   content = templatefile("${path.module}/cloud-init.tpl", {
     ssh_public_key = trimspace(file("${path.module}/id_ed25519.pub"))
   })
@@ -33,7 +33,7 @@ resource "multipass_instance" "control_plane" {
   cpus           = var.control_plane_cpus
   memory         = var.control_plane_memory
   disk           = var.control_plane_disk
-  cloudinit_file = local_file.cloud_init.filename
+  cloudinit_file = abspath(local_file.cloud_init.filename)
   depends_on     = [local_file.cloud_init]
 }
 
@@ -47,7 +47,7 @@ resource "multipass_instance" "worker" {
   cpus           = var.worker_cpus
   memory         = var.worker_memory
   disk           = var.worker_disk
-  cloudinit_file = local_file.cloud_init.filename
+  cloudinit_file = abspath(local_file.cloud_init.filename)
   depends_on     = [local_file.cloud_init]
 }
 
